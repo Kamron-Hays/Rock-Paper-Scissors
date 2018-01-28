@@ -30,10 +30,23 @@ $(document).ready(function()
                 string += ", ";
             }
         }
-        
+
         return string;
     }
-    
+
+    function getRules()
+    {
+        let rulesString = "";
+
+        for (var i = 0; i < rules.length; i++)
+        {
+            let rule = rules[i][0] + " " + rules[i][1] + " " + rules[i][2] + "\n";
+            rulesString += rule;
+        }
+
+        return rulesString;
+    }
+
     function addWeapons()
     {
         for (var i = 0; i < weapons.length; i++)
@@ -42,4 +55,9 @@ $(document).ready(function()
             $("#weapons").append(buttonElement);
         }
     }
+
+    $('#rules').on('click', function()
+    {
+        alert( getRules() );
+    });
 });
