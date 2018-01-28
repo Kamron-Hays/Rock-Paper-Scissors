@@ -15,9 +15,14 @@ const rules = [
 
 $(document).ready(function()
 {
+    let playerScore = 0;
+    let computerScore = 0;
+    let gameInProgress = true;
+
     $('#title').text( getGameName() );
     addWeapons();
     $('#status').text("Select a weapon.");
+    setScore(playerScore, computerScore);
 
     function computerPlay()
     {
@@ -27,7 +32,7 @@ $(document).ready(function()
     function playRound(playerSelection, computerSelection)
     {
         let result = "";
-
+        
         for (var i = 0; i < rules.length; i++)
         {
             if ( playerSelection === computerSelection )
@@ -39,15 +44,35 @@ $(document).ready(function()
                       ( playerSelection === rules[i][2] ||
                         computerSelection === rules[i][2] ) )
             {
-                result = ( playerSelection === rules[i][0] ) ? "You win!" : "You lose!";
+                if ( playerSelection === rules[i][0] )
+                {
+                    result = "You win this round!";
+                    playerScore += 1;
+                }
+                else
+                {
+                    result = "You lose this round!";
+                    computerScore += 1;
+                }
                 
                 result += " " + rules[i][0] + " " + rules[i][1] + " " + rules[i][2];
             }
         }
 
-        $('#player-selection').text("Player selection: " + playerSelection);
+        $('#player-selection').text("Your selection: " + playerSelection);
         $('#computer-selection').text("Computer selection: " + computerSelection);
         $('#status').text(result);
+        setScore(playerScore, computerScore);
+        
+        if ( playerScore >= 5 || computerScore >= 5 )
+        {
+            gameInProgress = false;
+            let gameOver = "<h1 id='game-over'>Game Over. You ";
+            gameOver += ( playerScore >= 5 ) ? "won" : "lost";
+            gameOver += "!</h1>";
+            $('#score').append(gameOver);
+            $('#score').append("<button type='button' id='restart'>Play Again</button>");
+        }
 
         return result;
     }
@@ -77,6 +102,8 @@ $(document).ready(function()
             let rule = rules[i][0] + " " + rules[i][1] + " " + rules[i][2] + "\n";
             rulesString += rule;
         }
+        
+        rulesString += "\nFirst player to reach 5 points wins the game!";
 
         return rulesString;
     }
@@ -90,13 +117,35 @@ $(document).ready(function()
         }
     }
 
+    function setScore(playerScore, computerScore)
+    {
+        $('#player-score').text("Your Score: " + playerScore);
+        $('#computer-score').text("Computer Score: " + computerScore);
+    }
+
     $('#rules').on('click', function()
     {
         alert( getRules() );
     });
-    
+
     $('.weapon').on('click', function()
     {
-        playRound(this.name, computerPlay());
+        if ( gameInProgress )
+        {
+            playRound(this.name, computerPlay());
+        }
+    });
+    
+    $('#score').on('click', '#restart', function()
+    {
+        $('#game-over').remove();
+        $('#restart').remove();
+        playerScore = 0;
+        computerScore = 0;
+        $('#status').text("Select a weapon.");
+        setScore(playerScore, computerScore);
+        $('#player-selection').text("Your selection:");
+        $('#computer-selection').text("Computer selection:");
+        gameInProgress = true;
     });
 });
