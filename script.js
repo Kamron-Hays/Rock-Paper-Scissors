@@ -17,6 +17,40 @@ $(document).ready(function()
 {
     $('#title').text( getGameName() );
     addWeapons();
+    $('#status').text("Select a weapon.");
+
+    function computerPlay()
+    {
+        return weapons[Math.floor(Math.random() * weapons.length)];
+    }
+    
+    function playRound(playerSelection, computerSelection)
+    {
+        let result = "";
+
+        for (var i = 0; i < rules.length; i++)
+        {
+            if ( playerSelection === computerSelection )
+            {
+                result = "It's a tie! Select another weapon.";
+            }
+            else if ( ( playerSelection === rules[i][0] ||
+                        computerSelection === rules[i][0] ) &&
+                      ( playerSelection === rules[i][2] ||
+                        computerSelection === rules[i][2] ) )
+            {
+                result = ( playerSelection === rules[i][0] ) ? "You win!" : "You lose!";
+                
+                result += " " + rules[i][0] + " " + rules[i][1] + " " + rules[i][2];
+            }
+        }
+
+        $('#player-selection').text("Player selection: " + playerSelection);
+        $('#computer-selection').text("Computer selection: " + computerSelection);
+        $('#status').text(result);
+
+        return result;
+    }
 
     function getGameName()
     {
@@ -51,7 +85,7 @@ $(document).ready(function()
     {
         for (var i = 0; i < weapons.length; i++)
         {
-            let buttonElement = '<button type="button" name="' + weapons[i] + '">' + weapons[i] + '</button>';
+            let buttonElement = '<button type="button" class="weapon" name="' + weapons[i] + '">' + weapons[i] + '</button>';
             $("#weapons").append(buttonElement);
         }
     }
@@ -59,5 +93,10 @@ $(document).ready(function()
     $('#rules').on('click', function()
     {
         alert( getRules() );
+    });
+    
+    $('.weapon').on('click', function()
+    {
+        playRound(this.name, computerPlay());
     });
 });
